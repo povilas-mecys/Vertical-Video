@@ -1,0 +1,136 @@
+ *{
+    outline: 1px solid red; /* Debugging purpose */
+ }
+/* --- Main Section Layout --- */
+section.typography {
+    max-width: 1370px; /* Corresponds to max-w-7xl */
+    margin: auto;
+    padding: 80px;
+    display: grid;
+    gap: 80px;
+  header {
+    text-align: center;
+    color: var(--color-black);
+    display: grid; 
+    text-wrap-style: balance;
+    h2{
+        margin: 0;
+        font-family: var(--font-minion);
+        font-size: 48px;
+        font-weight: 700;
+        line-height: 1.25;
+        &::after{
+            content: "";
+            display: block;
+            margin: 24px auto 40px auto;
+            width: 160px;
+            height: 4px;
+            border-radius: 8px;
+            background-color: var(--color-red); 
+        }
+    }
+    p{
+        margin: 0;
+        font-style: italic;
+        font-size: 24px;
+        line-height: 1.25;
+    }
+}
+}
+ 
+ 
+
+
+/* --- Carousel and Video Styling --- */
+#carousel-wrapper {
+    position: relative;
+    max-width: 100%;  
+    margin: auto;
+}
+
+#shorts-container {
+    /* Mobile: Flexbox-based carousel */
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    border-radius: 0.75rem;
+    /* Hide scrollbar */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+#shorts-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
+
+#shorts-container article {
+    flex: 0 0 100%;
+    scroll-snap-align: center; 
+}
+ 
+
+/* Desktop: Grid layout */
+@media (min-width: 1024px) {
+    #shorts-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        overflow-x: visible; /* Disable scrolling on grid */
+    }
+ 
+}
+
+iframe {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 9 / 16; 
+    border-radius: 12px;
+}
+
+
+/* --- Navigation Buttons --- */
+#prev-btn,
+#next-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 9999px;
+    padding: 0.5rem;
+    margin: 0 0.5rem;
+    color: #1f2937;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+#prev-btn:hover,
+#next-btn:hover {
+    background-color: white;
+}
+
+#prev-btn:disabled,
+#next-btn:disabled {
+    opacity: 0;
+    cursor: not-allowed;
+}
+
+#prev-btn {
+    left: 0;
+}
+
+#next-btn {
+    right: 0;
+}
+
+/* Hide buttons on desktop */
+@media (min-width: 980px) {
+    #prev-btn,
+    #next-btn {
+        display: none;
+    }
+}
+
