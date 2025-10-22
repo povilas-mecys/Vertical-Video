@@ -58,13 +58,15 @@
   transition: transform var(--transition);
   will-change: transform;
   list-style: none;
-  padding: 0;
-  margin: 0;
+  padding: 0 !important;
+  margin: 0 !important;
   gap: var(--gap);
 }
 .carousel__slide {
   flex: 0 0 100%;
   transition: 0.5s;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 .carousel__slide:before {
   display: none !important;
