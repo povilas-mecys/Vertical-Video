@@ -1,71 +1,113 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Select elements by their unique IDs. This works perfectly with the new semantic HTML.
-    const container = document.getElementById('shorts-container');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    
-    // A safeguard to ensure all necessary elements are present before running the script.
-    if (!container || !prevBtn || !nextBtn) {
-        console.error("Carousel elements not found. Please ensure the HTML has elements with IDs: 'shorts-container', 'prev-btn', and 'next-btn'.");
-        return;
+  const track = document.querySelector('.carousel__track');
+  const slides = [...track.children];
+  const prevBtn = document.querySelector('.carousel__button--prev');
+  const nextBtn = document.querySelector('.carousel__button--next');
+  const dots = [...document.querySelectorAll('.carousel__dot')];
+  const viewport = document.querySelector('.carousel__viewport');
+
+  let index = 0,
+      startX = 0,
+      currentX = 0,
+      isDragging = false,
+      translateX = 0;
+
+  const update = () => {
+    dots.forEach((dot, i) => dot.setAttribute('aria-current', i === index));
+    prevBtn.hidden = index === 0;
+    nextBtn.hidden = index === slides.length - 1;
+
+    const target = slides[index];
+    if (window.innerWidth <= 980) {
+      const targetRect = target.getBoundingClientRect();
+      const trackRect = track.getBoundingClientRect();
+      const offset = targetRect.left - trackRect.left;
+      track.style.transform = `translateX(-${offset}px)`;
+    } else {
+      track.style.transform = '';
     }
+  };
 
-    // The children of the container are now <article> tags, which is correct.
-    const items = Array.from(container.children);
-    const totalItems = items.length;
-    let currentIndex = 0;
+  const go = dir => {
+    index = Math.min(Math.max(index + dir, 0), slides.length - 1);
+    update();
+  };
 
-    // This function handles the visual update of the carousel.
-    const updateCarousel = () => {
-        // scrollIntoView provides a smooth, CSS-driven scroll to the active item.
-        const currentItem = items[currentIndex];
-        if(currentItem) {
-            currentItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-        }
+  // Navigation buttons
+  prevBtn.addEventListener('click', () => go(-1));
+  nextBtn.addEventListener('click', () => go(1));
 
-        // Update button states for accessibility and usability.
-        // Disable the 'previous' button when viewing the first item.
-        prevBtn.disabled = currentIndex === 0;
-        // Disable the 'next' button when viewing the last item.
-        nextBtn.disabled = currentIndex === totalItems - 1;
-    };
+  // Dots navigation
+  dots.forEach((dot, i) =>
+    dot.addEventListener('click', () => {
+      index = i;
+      update();
+    })
+  );
 
-    // Event listener for the 'Next' button.
-    nextBtn.addEventListener('click', () => {
-        if (currentIndex < totalItems - 1) {
-            currentIndex++;
-            updateCarousel();
-        }
+  // Drag logic (touch + mouse)
+  const startDrag = e => {
+    if (window.innerWidth > 980) return;
+    isDragging = true;
+    startX = e.touches?.[0].clientX ?? e.clientX;
+    viewport.classList.add('is-dragging');
+    track.style.transition = 'none';
+  };
+
+  const moveDrag = e => {
+    if (!isDragging) return;
+    currentX = e.touches?.[0].clientX ?? e.clientX;
+    translateX = -(slides[index].offsetLeft) + (currentX - startX);
+    track.style.transform = `translateX(${translateX}px)`;
+  };
+
+  const endDrag = () => {
+    if (!isDragging) return;
+    isDragging = false;
+    viewport.classList.remove('is-dragging');
+    track.style.transition = '';
+
+    // Default currentX to startX if drag didn’t move
+    const diff = (currentX || startX) - startX;
+    if (diff < -100) go(1);
+    else if (diff > 100) go(-1);
+    else update();
+  };
+
+  ['mousedown', 'touchstart'].forEach(ev => viewport.addEventListener(ev, startDrag));
+  ['mousemove', 'touchmove'].forEach(ev => viewport.addEventListener(ev, moveDrag));
+  ['mouseup', 'touchend'].forEach(ev => viewport.addEventListener(ev, endDrag));
+
+  // Desktop interaction: click to enlarge
+ slides.forEach(slide => {
+  slide.addEventListener('click', () => {
+    if (window.innerWidth <= 980) return;
+
+    // If this slide is already active, do nothing
+    if (slide.classList.contains('is-active')) return;
+
+    // Clear previous states
+    slides.forEach(s => {
+      s.classList.remove('is-active', 'has-active');
     });
 
-    // Event listener for the 'Previous' button.
-    prevBtn.addEventListener('click', () => {
-        if (currentIndex > 0) {
-            currentIndex--;
-            updateCarousel();
-        } 
-    });
+    // Mark the clicked one as active
+    slide.classList.add('is-active');
 
-    // Set the initial state of the carousel buttons on page load.
-    updateCarousel();
-    
-    // This part handles updating the buttons if the user manually swipes on a touch device.
-    // A timeout prevents the code from running too often while scrolling.
-    let scrollTimeout;
-    container.addEventListener('scroll', () => {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            const scrollLeft = container.scrollLeft;
-            const itemWidth = container.clientWidth; // Use clientWidth for accurate width of the visible area
-            const newIndex = Math.round(scrollLeft / itemWidth);
-
-            if (newIndex !== currentIndex) {
-                currentIndex = newIndex;
-                // Only update the button state, no need to trigger another scroll.
-                prevBtn.disabled = currentIndex === 0;
-                nextBtn.disabled = currentIndex === totalItems - 1;
-            }
-        }, 150); // A 150ms debounce delay.
+    // Add .has-active to all non-active slides
+    slides.forEach(s => {
+      if (!s.classList.contains('is-active')) {
+        s.classList.add('has-active');
+      }
     });
+  });
 });
+  // Debounced resize for performance
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(update, 150);
+  });
 
+  update();
+});

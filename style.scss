@@ -1,136 +1,181 @@
- *{
-    outline: 1px solid red; /* Debugging purpose */
- }
-/* --- Main Section Layout --- */
-section.typography {
-    max-width: 1370px; /* Corresponds to max-w-7xl */
+:root {
+    --gap: 16px;
+    --radius: 12px;
+
+    --nav-size: 2.5rem;
+    --dot: 0.75rem;
+    --peek: 20%;
+}
+
+* {
+    outline: 1px solid red;
+}
+
+/* --- Carousel Base --- */
+.carousel {
+    position: relative;
+    max-width: 1370px;
+    width: 100%;
     margin: auto;
     padding: 80px;
-    display: grid;
-    gap: 80px;
-  header {
-    text-align: center;
-    color: var(--color-black);
-    display: grid; 
-    text-wrap-style: balance;
-    h2{
-        margin: 0;
-        font-family: var(--font-minion);
-        font-size: 48px;
-        font-weight: 700;
-        line-height: 1.25;
-        &::after{
-            content: "";
-            display: block;
-            margin: 24px auto 40px auto;
-            width: 160px;
-            height: 4px;
-            border-radius: 8px;
-            background-color: var(--color-red); 
+
+    header {
+        text-align: center;
+        color: var(--color-black);
+        display: grid;
+        text-wrap-style: balance;
+
+        h2 {
+            margin: 0;
+            font-family: var(--font-minion);
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.25;
+
+            &::after {
+                content: "";
+                display: block;
+                margin: 24px auto 40px auto;
+                width: 160px;
+                height: 4px;
+                border-radius: 8px;
+                background-color: var(--color-red);
+            }
+        }
+
+        p {
+            margin: 0;
+            font-style: italic;
+            font-size: 24px;
+            line-height: 1.5;
         }
     }
-    p{
-        margin: 0;
-        font-style: italic;
-        font-size: 24px;
-        line-height: 1.25;
+
+    &__viewport {
+        cursor: grab;
+
+        &.is-dragging {
+            cursor: grabbing;
+        }
     }
-}
-}
+
+    &__track {
+        display: flex;
+        transition: transform var(--transition);
+        will-change: transform;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: var(--gap);
+    }
+
+    &__slide {
+        flex: 0 0 100%;
+        transition: 0.5s;
+
+        &:before {
+            display: none !important;
+        }
+
+        iframe {
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            border-radius: var(--radius);
+            display: block;
+            background: var(--color-black);
+            pointer-events: none;
+        }
+
+        &.is-active {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto;
+
+            iframe {
+                pointer-events: auto;
+            }
+        }
+
+        &.has-active {
+            @media (min-width: 980px) {
+                transform: scale(0.95);
+
+            }
+        }
+    }
+
+    &__nav {
+        display: grid;
+        &--button {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: var(--color-yellow);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: 0.25s;
+            z-index: 1;
+
+            &:hover {
+                background: var(--color-black);
+                color: var(--color-white);
+            }
+
+            &--prev {
+                left: 0.5rem;
+            }
+
+            &--next {
+                right: 0.5rem;
+            }
+
+            &[hidden] {
+                display: block;
+            }
+        }
+
+        &--dots {
+            display: flex;
+            justify-content: center;
+            gap: var(--dot);
+        
+
+         button {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 0;
+            cursor: pointer;
+            transition: 0.25s;
+            background: var(--color-black);
+
+            &[aria-current="true"] {
+                background: var(--color-red);
+            }
+        }
+    }
+    }
  
- 
 
 
-/* --- Carousel and Video Styling --- */
-#carousel-wrapper {
-    position: relative;
-    max-width: 100%;  
-    margin: auto;
-}
+/* --- Desktop Grid --- */
+@media (min-width: 980px) {
+    .carousel__viewport {
+        cursor: default;
+    }
 
-#shorts-container {
-    /* Mobile: Flexbox-based carousel */
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    border-radius: 0.75rem;
-    /* Hide scrollbar */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-}
-
-#shorts-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-}
-
-#shorts-container article {
-    flex: 0 0 100%;
-    scroll-snap-align: center; 
-}
- 
-
-/* Desktop: Grid layout */
-@media (min-width: 1024px) {
-    #shorts-container {
+    .carousel__track {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-        overflow-x: visible; /* Disable scrolling on grid */
+
     }
- 
-}
 
-iframe {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 9 / 16; 
-    border-radius: 12px;
-}
-
-
-/* --- Navigation Buttons --- */
-#prev-btn,
-#next-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(4px);
-    border-radius: 9999px;
-    padding: 0.5rem;
-    margin: 0 0.5rem;
-    color: #1f2937;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-}
-
-#prev-btn:hover,
-#next-btn:hover {
-    background-color: white;
-}
-
-#prev-btn:disabled,
-#next-btn:disabled {
-    opacity: 0;
-    cursor: not-allowed;
-}
-
-#prev-btn {
-    left: 0;
-}
-
-#next-btn {
-    right: 0;
-}
-
-/* Hide buttons on desktop */
-@media (min-width: 980px) {
-    #prev-btn,
-    #next-btn {
-        display: none;
+    .carousel__button,
+    .carousel__dots {
+        display: block;
     }
 }
-
+}
