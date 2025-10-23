@@ -1,15 +1,8 @@
 :root {
     --gap: 16px;
     --radius: 12px;
-
-    --nav-size: 2.5rem;
-    --dot: 0.75rem;
-    --peek: 20%;
 }
 
-* {
-    outline: 1px solid red;
-}
 
 /* --- Carousel Base --- */
 .carousel {
@@ -18,6 +11,8 @@
     width: 100%;
     margin: auto;
     padding: 80px;
+    display: grid;
+    gap: 40px;
 
     header {
         text-align: center;
@@ -35,7 +30,7 @@
             &::after {
                 content: "";
                 display: block;
-                margin: 24px auto 40px auto;
+                margin: 24px auto 32px auto;
                 width: 160px;
                 height: 4px;
                 border-radius: 8px;
@@ -61,12 +56,15 @@
 
     &__track {
         display: flex;
-        transition: transform var(--transition);
+        transition: transform 0.25s ease;
         will-change: transform;
         list-style: none;
         padding: 0 !important;
-        margin: 0 !important;
+        margin: 0 !important;  
         gap: var(--gap);
+        @media (min-width: 740px) {
+               gap: 0;
+            }
     }
 
     &__slide {
@@ -74,12 +72,31 @@
         transition: 0.5s;
         padding: 0 !important;
         margin: 0 !important;
-
+                    @media (min-width: 740px) {
+               transform: scale(0.95);
+            }
         &:before {
             display: none !important;
         }
 
-        iframe {
+
+
+        &.is-active {
+            opacity: 1; 
+            @media (min-width: 740px) {
+               transform: scale(1);
+            }
+            iframe {
+                pointer-events: auto;
+            }
+        }
+
+        &.has-active {
+            @media (min-width: 740px) {
+                transform: scale(0.9);
+            }
+        }
+                iframe {
             width: 100%;
             aspect-ratio: 9 / 16;
             border-radius: var(--radius);
@@ -87,43 +104,35 @@
             background: var(--color-black);
             pointer-events: none;
         }
-
-        &.is-active {
-            transform: scale(1);
-            opacity: 1;
-            pointer-events: auto;
-
-            iframe {
-                pointer-events: auto;
-            }
-        }
-
-        &.has-active {
-            @media (min-width: 980px) {
-                transform: scale(0.95);
-
-            }
-        }
     }
 
     &__nav {
         display: grid;
+        grid-template-columns: repeat(2, auto);
+        justify-content: center;
+        gap: var(--gap);
+
         &--button {
             position: relative;
-            width: 40px;
-            height: 40px;
+            width: 80px;
+            height: 80px;
             border: none;
             border-radius: 50%;
             background: var(--color-yellow);
+            color: var(--color-black);
             display: grid;
             place-items: center;
             cursor: pointer;
             transition: 0.25s;
-            z-index: 1;
 
             &:hover {
                 background: var(--color-black);
-                color: var(--color-white);
+                fill: var(--color-white);
+            }
+
+            &:active {
+                background: var(--color-red);
+                fill: var(--color-white);
             }
 
             &--prev {
@@ -135,49 +144,55 @@
             }
 
             &[hidden] {
-                display: block;
+                display: grid;
             }
         }
 
         &--dots {
             display: flex;
-            justify-content: center;
-            gap: var(--dot);
-        
+            grid-column: 1 / -1;
+            justify-self: center;
+            gap: var(--gap);
 
-         button {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: 0;
-            cursor: pointer;
-            transition: 0.25s;
-            background: var(--color-black);
 
-            &[aria-current="true"] {
-                background: var(--color-red);
+            button.dot {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                border: 0;
+                cursor: pointer;
+                transition: 0.25s;
+                background: var(--color-black);
+
+                &:hover {
+                    background: var(--color-yellow);
+
+                }
+
+                &[aria-current="true"] {
+                    background: var(--color-red);
+                }
             }
         }
     }
+
+
+
+    /* --- Desktop Grid --- */
+    @media (min-width: 740px) {
+        .carousel__viewport {
+            cursor: default;
+        }
+
+        .carousel__track {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+
+        }
+
+        .carousel__button,
+        .carousel__dots {
+            display: block;
+        }
     }
- 
-
-
-/* --- Desktop Grid --- */
-@media (min-width: 980px) {
-    .carousel__viewport {
-        cursor: default;
-    }
-
-    .carousel__track {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-
-    }
-
-    .carousel__button,
-    .carousel__dots {
-        display: block;
-    }
-}
 }

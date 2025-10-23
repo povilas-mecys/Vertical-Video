@@ -3,14 +3,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const slides = [...track.children];
   const prevBtn = document.querySelector('.carousel__button--prev');
   const nextBtn = document.querySelector('.carousel__button--next');
-  const dots = [...document.querySelectorAll('.carousel__dot')];
+  const dotsContainer = document.querySelector('.carousel__nav--dots');
+  const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
   const viewport = document.querySelector('.carousel__viewport');
 
-  let index = 0,
-      startX = 0,
-      currentX = 0,
-      isDragging = false,
-      translateX = 0;
+  let index = 0;
+  let startX = 0;
+  let currentX = 0;
+  let isDragging = false;
+  let translateX = 0;
 
   const update = () => {
     dots.forEach((dot, i) => dot.setAttribute('aria-current', i === index));
@@ -28,33 +29,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  const go = dir => {
+  const go = (dir) => {
     index = Math.min(Math.max(index + dir, 0), slides.length - 1);
     update();
   };
 
-  // Navigation buttons
+  // Button navigation
   prevBtn.addEventListener('click', () => go(-1));
   nextBtn.addEventListener('click', () => go(1));
 
-  // Dots navigation
-  dots.forEach((dot, i) =>
+  // Dot navigation
+  dots.forEach((dot, i) => {
     dot.addEventListener('click', () => {
       index = i;
       update();
-    })
-  );
+    });
+  });
 
-  // Drag logic (touch + mouse)
-  const startDrag = e => {
-    if (window.innerWidth > 980) return;
+  // Drag logic
+  const startDrag = (e) => {
+    if (window.innerWidth > 740) return;
     isDragging = true;
     startX = e.touches?.[0].clientX ?? e.clientX;
     viewport.classList.add('is-dragging');
     track.style.transition = 'none';
   };
 
-  const moveDrag = e => {
+  const moveDrag = (e) => {
     if (!isDragging) return;
     currentX = e.touches?.[0].clientX ?? e.clientX;
     translateX = -(slides[index].offsetLeft) + (currentX - startX);
@@ -67,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     viewport.classList.remove('is-dragging');
     track.style.transition = '';
 
-    // Default currentX to startX if drag didn’t move
     const diff = (currentX || startX) - startX;
     if (diff < -100) go(1);
     else if (diff > 100) go(-1);
@@ -76,33 +76,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   ['mousedown', 'touchstart'].forEach(ev => viewport.addEventListener(ev, startDrag));
   ['mousemove', 'touchmove'].forEach(ev => viewport.addEventListener(ev, moveDrag));
-  ['mouseup', 'touchend'].forEach(ev => viewport.addEventListener(ev, endDrag));
+  ['mouseup', 'touchend', 'mouseleave'].forEach(ev => viewport.addEventListener(ev, endDrag));
 
-  // Desktop interaction: click to enlarge
- slides.forEach(slide => {
-  slide.addEventListener('click', () => {
-    if (window.innerWidth <= 980) return;
+  // Desktop click-to-enlarge
+  slides.forEach(slide => {
+    slide.addEventListener('click', () => {
+      if (window.innerWidth <= 740) return;
+      if (slide.classList.contains('is-active')) return;
 
-    // If this slide is already active, do nothing
-    if (slide.classList.contains('is-active')) return;
+      slides.forEach(s => s.classList.remove('is-active', 'has-active'));
+      slide.classList.add('is-active');
 
-    // Clear previous states
-    slides.forEach(s => {
-      s.classList.remove('is-active', 'has-active');
-    });
-
-    // Mark the clicked one as active
-    slide.classList.add('is-active');
-
-    // Add .has-active to all non-active slides
-    slides.forEach(s => {
-      if (!s.classList.contains('is-active')) {
-        s.classList.add('has-active');
-      }
+      slides.forEach(s => {
+        if (!s.classList.contains('is-active')) {
+          s.classList.add('has-active');
+        }
+      });
     });
   });
-});
-  // Debounced resize for performance
+
+  // Debounce resize
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
