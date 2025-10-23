@@ -12,6 +12,7 @@
   padding: 80px;
   display: grid;
   gap: 40px;
+  overflow: hidden;
   /* --- Desktop Grid --- */
 }
 .carousel header {
@@ -105,6 +106,7 @@
   grid-template-columns: repeat(2, auto);
   justify-content: center;
   gap: var(--gap);
+  position: relative;
 }
 .carousel__nav--button {
   position: relative;
@@ -127,12 +129,6 @@
   background: var(--color-red);
   fill: var(--color-white);
 }
-.carousel__nav--button--prev {
-  left: 0.5rem;
-}
-.carousel__nav--button--next {
-  right: 0.5rem;
-}
 .carousel__nav--button[hidden] {
   display: grid;
 }
@@ -141,6 +137,8 @@
   grid-column: 1/-1;
   justify-self: center;
   gap: var(--gap);
+  position: absolute;
+  top: -100px;
 }
 .carousel__nav--dots button.dot {
   width: 16px;
@@ -149,7 +147,7 @@
   border: 0;
   cursor: pointer;
   transition: 0.25s;
-  background: var(--color-black);
+  background: var(--color-white);
 }
 .carousel__nav--dots button.dot:hover {
   background: var(--color-yellow);

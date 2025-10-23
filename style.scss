@@ -13,6 +13,7 @@
     padding: 80px;
     display: grid;
     gap: 40px;
+        overflow: hidden;
 
     header {
         text-align: center;
@@ -111,6 +112,7 @@
         grid-template-columns: repeat(2, auto);
         justify-content: center;
         gap: var(--gap);
+        position: relative;
 
         &--button {
             position: relative;
@@ -135,12 +137,10 @@
                 fill: var(--color-white);
             }
 
-            &--prev {
-                left: 0.5rem;
+            &--prev { 
             }
 
-            &--next {
-                right: 0.5rem;
+            &--next { 
             }
 
             &[hidden] {
@@ -153,6 +153,8 @@
             grid-column: 1 / -1;
             justify-self: center;
             gap: var(--gap);
+             position: absolute;
+            top: -100px;
 
 
             button.dot {
@@ -162,7 +164,7 @@
                 border: 0;
                 cursor: pointer;
                 transition: 0.25s;
-                background: var(--color-black);
+                background: var(--color-white);
 
                 &:hover {
                     background: var(--color-yellow);
