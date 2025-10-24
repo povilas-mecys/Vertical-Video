@@ -13,7 +13,7 @@
     padding: 80px;
     display: grid;
     gap: 40px;
-        overflow: hidden;
+    overflow: hidden;
 
     header {
         text-align: center;
@@ -61,11 +61,12 @@
         will-change: transform;
         list-style: none;
         padding: 0 !important;
-        margin: 0 !important;  
+        margin: 0 !important;
         gap: var(--gap);
+
         @media (min-width: 740px) {
-               gap: 0;
-            }
+            gap: 0;
+        }
     }
 
     &__slide {
@@ -73,9 +74,11 @@
         transition: 0.5s;
         padding: 0 !important;
         margin: 0 !important;
-                    @media (min-width: 740px) {
-               transform: scale(0.95);
-            }
+
+        @media (min-width: 740px) {
+            transform: scale(0.95);
+        }
+
         &:before {
             display: none !important;
         }
@@ -83,10 +86,12 @@
 
 
         &.is-active {
-            opacity: 1; 
+            opacity: 1;
+
             @media (min-width: 740px) {
-               transform: scale(1);
+                transform: scale(1);
             }
+
             iframe {
                 pointer-events: auto;
             }
@@ -97,7 +102,8 @@
                 transform: scale(0.9);
             }
         }
-                iframe {
+
+        iframe {
             width: 100%;
             aspect-ratio: 9 / 16;
             border-radius: var(--radius);
@@ -137,11 +143,9 @@
                 fill: var(--color-white);
             }
 
-            &--prev { 
-            }
+            &--prev {}
 
-            &--next { 
-            }
+            &--next {}
 
             &[hidden] {
                 display: grid;
@@ -153,7 +157,7 @@
             grid-column: 1 / -1;
             justify-self: center;
             gap: var(--gap);
-             position: absolute;
+            position: absolute;
             top: -100px;
 
 
@@ -189,7 +193,7 @@
         .carousel__track {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-
+            transform: translate(0) !important;
         }
 
         .carousel__button,
@@ -197,4 +201,8 @@
             display: block;
         }
     }
+}
+
+* {
+    outline: 1px solid red;
 }

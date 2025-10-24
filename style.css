@@ -162,9 +162,14 @@
   .carousel .carousel__track {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    transform: translate(0) !important;
   }
   .carousel .carousel__button,
   .carousel .carousel__dots {
     display: block;
   }
+}
+
+* {
+  outline: 1px solid red;
 }/*# sourceMappingURL=style.css.map */
