@@ -1,9 +1,3 @@
-:root {
-  --gap: 16px;
-  --radius: 12px;
-}
-
-/* --- Carousel Base --- */
 .carousel {
   position: relative;
   max-width: 1370px;
@@ -13,20 +7,47 @@
   display: grid;
   gap: 40px;
   overflow: hidden;
-  /* --- Desktop Grid --- */
+  /* --- Header Styling ---
+     Centered text with specific font styling for title and subtitle.
+     Title includes a decorative underline element. */
+  /* --- Viewport & Track Layout ---
+     Viewport sets cursor style for drag interaction.
+     Track is a flex container for slides with gap and smooth transform transitions. */
+  /* --- Slide Styling & Behavior ---
+     Each slide takes full width, with smooth transform transitions.
+     Iframes inside slides have aspect ratio and pointer events controlled based on active state.
+     Includes tap/click scaling for mobile interaction feedback. */
+  /* --- Navigation Controls ---
+     Centered navigation container with circular buttons and dot indicators.
+     Buttons have hover and active states.
+     Dot buttons show current slide with distinct color and shadow effects. */
+  /* --- Responsive Styles for Larger Screens (min-width: 740px) ---
+     Disable grab cursor on viewport.
+     Change track layout to grid with 3 columns and no gap.
+     Slides scale differently based on active or nearby states.
+     Hide navigation controls on larger screens. */
 }
 .carousel header {
   text-align: center;
   color: var(--color-black);
   display: grid;
-  text-wrap-style: balance;
 }
 .carousel header h2 {
   margin: 0;
   font-family: var(--font-minion);
-  font-size: 48px;
+  font-size: 24px;
   font-weight: 700;
   line-height: 1.25;
+}
+@media (min-width: 740px) {
+  .carousel header h2 {
+    font-size: 36px;
+  }
+}
+@media (min-width: 980px) {
+  .carousel header h2 {
+    font-size: 42px;
+  }
 }
 .carousel header h2::after {
   content: "";
@@ -40,86 +61,70 @@
 .carousel header p {
   margin: 0;
   font-style: italic;
-  font-size: 24px;
+  font-size: 18px;
   line-height: 1.5;
+  text-wrap-style: balance;
+}
+@media (min-width: 740px) {
+  .carousel header p {
+    font-size: 24px;
+  }
 }
 .carousel__viewport {
   cursor: grab;
 }
-.carousel__viewport.is-dragging {
-  cursor: grabbing;
-}
 .carousel__track {
   display: flex;
-  transition: transform 0.25s ease;
-  will-change: transform;
-  list-style: none;
+  gap: 16px;
   padding: 0 !important;
   margin: 0 !important;
-  gap: var(--gap);
-}
-@media (min-width: 740px) {
-  .carousel__track {
-    gap: 0;
-  }
+  list-style: none;
+  transition: transform 0.25s ease;
+  will-change: transform;
 }
 .carousel__slide {
   flex: 0 0 100%;
-  transition: 0.5s;
+  transition: transform 0.5s ease;
   padding: 0 !important;
   margin: 0 !important;
-}
-@media (min-width: 740px) {
-  .carousel__slide {
-    transform: scale(0.95);
-  }
+  transform-origin: center;
 }
 .carousel__slide:before {
   display: none !important;
 }
-.carousel__slide.is-active {
-  opacity: 1;
-}
-@media (min-width: 740px) {
-  .carousel__slide.is-active {
-    transform: scale(1);
-  }
-}
-.carousel__slide.is-active iframe {
-  pointer-events: auto;
-}
-@media (min-width: 740px) {
-  .carousel__slide.has-active {
-    transform: scale(0.9);
-  }
-}
 .carousel__slide iframe {
   width: 100%;
   aspect-ratio: 9/16;
-  border-radius: var(--radius);
+  border-radius: 12px;
   display: block;
   background: var(--color-black);
   pointer-events: none;
 }
+.carousel__slide.is-active iframe {
+  pointer-events: auto;
+}
+.carousel__slide:active, .carousel__slide:focus {
+  transform: scale(0.95);
+}
 .carousel__nav {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
+  display: flex;
   justify-content: center;
-  gap: var(--gap);
+  align-items: center;
+  gap: 16px;
   position: relative;
 }
 .carousel__nav--button {
-  position: relative;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   border: none;
   border-radius: 50%;
   background: var(--color-yellow);
   color: var(--color-black);
-  display: grid;
-  place-items: center;
   cursor: pointer;
-  transition: 0.25s;
+  transition: 0.25s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .carousel__nav--button:hover {
   background: var(--color-black);
@@ -130,46 +135,58 @@
   fill: var(--color-white);
 }
 .carousel__nav--button[hidden] {
-  display: grid;
+  opacity: 0.5;
+  filter: grayscale(1);
+  pointer-events: none;
+}
+.carousel__nav--button svg {
+  height: 16px;
+  width: auto;
 }
 .carousel__nav--dots {
   display: flex;
+  gap: 16px;
+  position: absolute;
+  top: -120px;
   grid-column: 1/-1;
   justify-self: center;
-  gap: var(--gap);
-  position: absolute;
-  top: -100px;
 }
-.carousel__nav--dots button.dot {
-  width: 16px;
-  height: 16px;
+.carousel__nav--dots button {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   border: 0;
   cursor: pointer;
   transition: 0.25s;
   background: var(--color-white);
+  box-shadow: 0 0 16px rgb(0, 0, 0);
 }
-.carousel__nav--dots button.dot:hover {
+.carousel__nav--dots button:hover {
   background: var(--color-yellow);
 }
-.carousel__nav--dots button.dot[aria-current=true] {
+.carousel__nav--dots button[aria-current=true] {
   background: var(--color-red);
 }
 @media (min-width: 740px) {
-  .carousel .carousel__viewport {
+  .carousel__viewport {
     cursor: default;
   }
-  .carousel .carousel__track {
+  .carousel__track {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    gap: 0;
     transform: translate(0) !important;
   }
-  .carousel .carousel__button,
-  .carousel .carousel__dots {
-    display: block;
+  .carousel__slide {
+    transform: scale(0.95);
   }
-}
-
-* {
-  outline: 1px solid red;
+  .carousel__slide.is-active {
+    transform: scale(1);
+  }
+  .carousel__slide.has-active {
+    transform: scale(0.9);
+  }
+  .carousel__nav {
+    display: none;
+  }
 }/*# sourceMappingURL=style.css.map */

@@ -1,10 +1,3 @@
-:root {
-    --gap: 16px;
-    --radius: 12px;
-}
-
-
-/* --- Carousel Base --- */
 .carousel {
     position: relative;
     max-width: 1370px;
@@ -15,18 +8,28 @@
     gap: 40px;
     overflow: hidden;
 
+    /* --- Header Styling ---
+       Centered text with specific font styling for title and subtitle.
+       Title includes a decorative underline element. */
     header {
         text-align: center;
         color: var(--color-black);
         display: grid;
-        text-wrap-style: balance;
 
         h2 {
             margin: 0;
             font-family: var(--font-minion);
-            font-size: 48px;
+            font-size: 24px;
             font-weight: 700;
             line-height: 1.25;
+
+            @media (min-width: 740px) {
+                font-size: 36px;
+            }
+
+            @media (min-width: 980px) {
+                font-size: 42px;
+            }
 
             &::after {
                 content: "";
@@ -42,96 +45,94 @@
         p {
             margin: 0;
             font-style: italic;
-            font-size: 24px;
+            font-size: 18px;
             line-height: 1.5;
+            text-wrap-style: balance;
+
+            @media (min-width: 740px) {
+                font-size: 24px;
+            }
         }
     }
 
+    /* --- Viewport & Track Layout ---
+       Viewport sets cursor style for drag interaction.
+       Track is a flex container for slides with gap and smooth transform transitions. */
     &__viewport {
         cursor: grab;
-
-        &.is-dragging {
-            cursor: grabbing;
-        }
     }
 
     &__track {
         display: flex;
+        gap: 16px;
+        padding: 0 !important;
+        margin: 0 !important;
+        list-style: none;
         transition: transform 0.25s ease;
         will-change: transform;
-        list-style: none;
-        padding: 0 !important;
-        margin: 0 !important;
-        gap: var(--gap);
-
-        @media (min-width: 740px) {
-            gap: 0;
-        }
     }
 
+    /* --- Slide Styling & Behavior ---
+       Each slide takes full width, with smooth transform transitions.
+       Iframes inside slides have aspect ratio and pointer events controlled based on active state.
+       Includes tap/click scaling for mobile interaction feedback. */
     &__slide {
         flex: 0 0 100%;
-        transition: 0.5s;
+        transition: transform 0.5s ease;
         padding: 0 !important;
         margin: 0 !important;
-
-        @media (min-width: 740px) {
-            transform: scale(0.95);
-        }
+        transform-origin: center;
 
         &:before {
             display: none !important;
         }
 
-
+        iframe {
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            border-radius: 12px;
+            display: block;
+            background: var(--color-black);
+            pointer-events: none;
+        }
 
         &.is-active {
-            opacity: 1;
-
-            @media (min-width: 740px) {
-                transform: scale(1);
-            }
-
             iframe {
                 pointer-events: auto;
             }
         }
 
-        &.has-active {
-            @media (min-width: 740px) {
-                transform: scale(0.9);
-            }
-        }
+        &.has-active {}
 
-        iframe {
-            width: 100%;
-            aspect-ratio: 9 / 16;
-            border-radius: var(--radius);
-            display: block;
-            background: var(--color-black);
-            pointer-events: none;
+        &:active,
+        &:focus {
+            transform: scale(0.95);
         }
     }
 
+    /* --- Navigation Controls ---
+       Centered navigation container with circular buttons and dot indicators.
+       Buttons have hover and active states.
+       Dot buttons show current slide with distinct color and shadow effects. */
     &__nav {
-        display: grid;
-        grid-template-columns: repeat(2, auto);
+        display: flex;
         justify-content: center;
-        gap: var(--gap);
+        align-items: center;
+        gap: 16px;
         position: relative;
 
         &--button {
-            position: relative;
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             border: none;
             border-radius: 50%;
             background: var(--color-yellow);
             color: var(--color-black);
-            display: grid;
-            place-items: center;
             cursor: pointer;
-            transition: 0.25s;
+            transition: 0.25s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
             &:hover {
                 background: var(--color-black);
@@ -143,36 +144,38 @@
                 fill: var(--color-white);
             }
 
-            &--prev {}
-
-            &--next {}
-
             &[hidden] {
-                display: grid;
+                opacity: 0.5;
+                filter: grayscale(1);
+                pointer-events: none;
+            }
+
+            svg {
+                height: 16px;
+                width: auto;
             }
         }
 
         &--dots {
             display: flex;
+            gap: 16px;
+            position: absolute;
+            top: -120px;
             grid-column: 1 / -1;
             justify-self: center;
-            gap: var(--gap);
-            position: absolute;
-            top: -100px;
 
-
-            button.dot {
-                width: 16px;
-                height: 16px;
+            button {
+                width: 12px;
+                height: 12px;
                 border-radius: 50%;
                 border: 0;
                 cursor: pointer;
                 transition: 0.25s;
                 background: var(--color-white);
+                box-shadow: 0 0 16px rgba(0, 0, 0, 1);
 
                 &:hover {
                     background: var(--color-yellow);
-
                 }
 
                 &[aria-current="true"] {
@@ -182,27 +185,38 @@
         }
     }
 
-
-
-    /* --- Desktop Grid --- */
+    /* --- Responsive Styles for Larger Screens (min-width: 740px) ---
+       Disable grab cursor on viewport.
+       Change track layout to grid with 3 columns and no gap.
+       Slides scale differently based on active or nearby states.
+       Hide navigation controls on larger screens. */
     @media (min-width: 740px) {
-        .carousel__viewport {
+        &__viewport {
             cursor: default;
         }
 
-        .carousel__track {
+        &__track {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
+            gap: 0;
             transform: translate(0) !important;
         }
 
-        .carousel__button,
-        .carousel__dots {
-            display: block;
-        }
-    }
-}
+        &__slide {
+            transform: scale(0.95);
 
-* {
-    outline: 1px solid red;
+            &.is-active {
+                transform: scale(1);
+            }
+
+            &.has-active {
+                transform: scale(0.9);
+            }
+        }
+
+        &__nav {
+            display: none;
+        }
+
+    }
 }

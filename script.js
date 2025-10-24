@@ -1,35 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // DOM elements selection
   const track = document.querySelector('.carousel__track');
   const slides = [...track.children];
   const prevBtn = document.querySelector('.carousel__button--prev');
   const nextBtn = document.querySelector('.carousel__button--next');
   const dotsContainer = document.querySelector('.carousel__nav--dots');
-  const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
+  const dots = dotsContainer ? dotsContainer.querySelectorAll('.carousel__nav--dots button') : [];
   const viewport = document.querySelector('.carousel__viewport');
 
   let index = 0;
-  let startX = 0;
-  let currentX = 0;
-  let isDragging = false;
-  let translateX = 0;
 
+  // Index and update functions
   const update = () => {
+    // Update aria-current attribute for dots based on current index
     dots.forEach((dot, i) => dot.setAttribute('aria-current', i === index));
+    // Hide prev button if at the first slide
     prevBtn.hidden = index === 0;
+    // Hide next button if at the last slide
     nextBtn.hidden = index === slides.length - 1;
 
     const target = slides[index];
     if (window.innerWidth <= 980) {
+      // Calculate offset for mobile view to translate the track
       const targetRect = target.getBoundingClientRect();
       const trackRect = track.getBoundingClientRect();
       const offset = targetRect.left - trackRect.left;
       track.style.transform = `translateX(-${offset}px)`;
     } else {
+      // Reset transform for desktop view
       track.style.transform = '';
     }
   };
 
   const go = (dir) => {
+    // Change index within bounds and update carousel
     index = Math.min(Math.max(index + dir, 0), slides.length - 1);
     update();
   };
@@ -46,61 +50,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Drag logic
-  const startDrag = (e) => {
-    if (window.innerWidth > 740) return;
-    isDragging = true;
-    startX = e.touches?.[0].clientX ?? e.clientX;
-    viewport.classList.add('is-dragging');
-    track.style.transition = 'none';
-  };
-
-  const moveDrag = (e) => {
-    if (!isDragging) return;
-    currentX = e.touches?.[0].clientX ?? e.clientX;
-    translateX = -(slides[index].offsetLeft) + (currentX - startX);
-    track.style.transform = `translateX(${translateX}px)`;
-  };
-
-  const endDrag = () => {
-    if (!isDragging) return;
-    isDragging = false;
-    viewport.classList.remove('is-dragging');
-    track.style.transition = '';
-
-    const diff = (currentX || startX) - startX;
-    if (diff < -100) go(1);
-    else if (diff > 100) go(-1);
-    else update();
-  };
-
-  ['mousedown', 'touchstart'].forEach(ev => viewport.addEventListener(ev, startDrag));
-  ['mousemove', 'touchmove'].forEach(ev => viewport.addEventListener(ev, moveDrag));
-  ['mouseup', 'touchend', 'mouseleave'].forEach(ev => viewport.addEventListener(ev, endDrag));
-
-  // Desktop click-to-enlarge
+  // Desktop click-to-enlarge with autoplay logic
   slides.forEach(slide => {
+    const iframe = slide.querySelector('iframe');
     slide.addEventListener('click', () => {
-      if (window.innerWidth <= 740) return;
+      // If slide is already active, do nothing
       if (slide.classList.contains('is-active')) return;
 
-      slides.forEach(s => s.classList.remove('is-active', 'has-active'));
-      slide.classList.add('is-active');
-
+      // Remove active and has-active classes from all slides and stop videos
       slides.forEach(s => {
-        if (!s.classList.contains('is-active')) {
-          s.classList.add('has-active');
+        s.classList.remove('is-active', 'has-active');
+        const sIframe = s.querySelector('iframe');
+        if (sIframe) {
+          const src = sIframe.src.replace(/[?&]autoplay=1/, '');
+          sIframe.src = src; // stop video playback
         }
       });
+
+      // Set clicked slide as active
+      slide.classList.add('is-active');
+      // Add has-active class to all other slides
+      slides.forEach(s => {
+        if (!s.classList.contains('is-active')) s.classList.add('has-active');
+      });
+
+      // Start autoplay on the iframe of the active slide
+      if (iframe) {
+        let src = iframe.src;
+        src += src.includes('?') ? '&autoplay=1' : '?autoplay=1';
+        iframe.src = src; // start playback
+      }
     });
   });
 
-  // Debounce resize
+  // Resize debounce to optimize update calls
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(update, 150);
   });
 
+  // Initial update call to set up carousel
   update();
 });
